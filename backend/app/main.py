@@ -1,14 +1,15 @@
-from time import sleep
-import sys
+from fastapi import FastAPI
 
-print(sys.argv)
+from apps.users.routers import users_router
 
-limit = int(sys.argv[-1])
 
-n = 0
-while True:
-    print(n)
-    n += 1
-    sleep(1)
-    if n == limit:
-        exit()
+
+def get_application() -> FastAPI:
+    app = FastAPI()
+
+    app.include_router(users_router, prefix='/users', tags=['Users', "Auth"])
+
+    return app
+
+
+app = get_application()
