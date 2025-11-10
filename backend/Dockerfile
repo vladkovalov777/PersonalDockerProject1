@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.12
 
 WORKDIR /app
 
@@ -15,5 +15,6 @@ COPY pyproject.toml uv.lock /app/
 RUN uv pip install --system --no-cache .
 
 COPY /app /app
+EXPOSE 20001
 
-CMD ["uv", "run", "-m", "main", "10"]
+CMD ["uv", "run", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "20001"]
