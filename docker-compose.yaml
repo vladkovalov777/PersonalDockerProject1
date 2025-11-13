@@ -20,6 +20,26 @@ services:
       - main_network
 
 
+  frontend:
+    container_name: frontend
+    hostname: frontend
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - "25555:30002"
+    restart: always
+    volumes:
+      - ./frontend/app:/app
+    env_file:
+      - .env
+    command: |
+      sh -c "
+      uv run -m uvicorn main:app --host "0.0.0.0" --port 30002 --reload
+      "
+    networks:
+      - main_network
+
 networks:
   main_network:
     driver: bridge
