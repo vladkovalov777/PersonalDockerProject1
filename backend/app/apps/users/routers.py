@@ -10,6 +10,7 @@ users_router = APIRouter()
 async def create_user(user_data: RegisterUserSchema) -> UserBaseFieldsSchema:
     """create user based on name email password"""
     print(user_data.password, 8888888888888)
+    1/0
     hp = await PasswordHandler.get_password_hash(user_data.password)
     print(hp)
 
