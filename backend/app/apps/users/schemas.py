@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 class UserPasswordSchema(BaseModel):
@@ -16,3 +16,6 @@ class UserBaseFieldsSchema(BaseModel):
 
 class RegisterUserSchema(UserPasswordSchema, UserBaseFieldsSchema):
     pass
+
+class SavedUserSchema(UserBaseFieldsSchema):
+    id: int
