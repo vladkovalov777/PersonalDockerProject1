@@ -1,0 +1,11 @@
+
+{% if user %}
+
+<button type="button" class="btn btn-light">User: {{ user.name }}</button>
+<button type="button" class="btn btn-warning">Logout</button>
+{% else %}
+
+<a class="btn btn-success m-1" href="#">Login</a>
+<a class="btn btn-success" href="#">Register</a>
+
+{% endif %}
