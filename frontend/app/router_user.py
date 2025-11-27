@@ -18,3 +18,16 @@ async def index(request: Request):
     response = templates.TemplateResponse('pages/index.html', context=context)
 
     return response
+
+
+@router_user.get("/register")
+async def user_register(request: Request):
+    context = {
+        "request": request,
+        "title": "Головна сторінка сайту",
+        "user": {}
+    }
+
+    response = templates.TemplateResponse('pages/index.html', context=context)
+
+    return response
