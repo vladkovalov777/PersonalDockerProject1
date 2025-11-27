@@ -11,7 +11,8 @@ router_user = APIRouter()
 async def index(request: Request):
     context = {
         "request": request,
-        "title": "Головна сторінка сайту"
+        "title": "Головна сторінка сайту",
+        "user": {}
     }
 
     response = templates.TemplateResponse('pages/index.html', context=context)
