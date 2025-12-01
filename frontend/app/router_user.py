@@ -1,5 +1,6 @@
 from fastapi import Request, APIRouter, Form, status
 from fastapi.responses import RedirectResponse
+import httpx
 
 from fastapi.templating import Jinja2Templates
 
@@ -33,6 +34,30 @@ async def user_register(request: Request, email: str = Form(''), username: str =
 
         response = templates.TemplateResponse('pages/register.html', context=context)
         return response
+
+    """
+    curl -X 'POST' \
+      'http://localhost:19999/users/create' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "email": "user@example.com",
+      "name": "string",
+      "password": "string"
+    }'
+    """
+    async with httpx.AsyncClient() as client:
+        headers = {
+            "Content-Type": "application/json",
+        }
+        payload = {
+            "email": email,
+            "name": username,
+            "password": password
+        }
+        response = await client.post("http://backend:20001/users/create", json=payload, headers=headers)
+
+
 
     response = RedirectResponse(request.url_for('index'), status_code=status.HTTP_303_SEE_OTHER)
     return response
