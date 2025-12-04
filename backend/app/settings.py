@@ -18,7 +18,14 @@ class DatabaseSettings(BaseSettings):
         return url
 
 
-class Settings(DatabaseSettings):
+class JWTSettings(BaseSettings):
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
+    ACCESS_TOKEN_LIFETIME_MINUTES: int = 15
+    REFRESH_TOKEN_LIFETIME_MINUTES: int = 60
+
+
+class Settings(DatabaseSettings, JWTSettings):
     DEBUG: bool = False
 
 
