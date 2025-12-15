@@ -1,9 +1,10 @@
 from datetime import timedelta, datetime
 from fastapi import HTTPException, status
-
+from sqlalchemy.ext.asyncio import AsyncSession
 
 import jwt
 
+from apps.users.crud import user_manager
 from apps.users.models import User
 from settings import settings
 
@@ -23,8 +24,10 @@ class AuthHandler:
         # todo process refresh token
 
         return {
-            "access_token": await self.generate_token(access_token_payload, timedelta(minutes=settings.ACCESS_TOKEN_LIFETIME_MINUTES)),
-            "refresh_token": await self.generate_token(refresh_token_payload, timedelta(minutes=settings.REFRESH_TOKEN_LIFETIME_MINUTES))
+            "access_token": await self.generate_token(access_token_payload,
+                                                      timedelta(minutes=settings.ACCESS_TOKEN_LIFETIME_MINUTES)),
+            "refresh_token": await self.generate_token(refresh_token_payload,
+                                                       timedelta(minutes=settings.REFRESH_TOKEN_LIFETIME_MINUTES))
         }
 
     async def generate_token(self, payload: dict, expiry: timedelta) -> str:
@@ -54,6 +57,15 @@ class AuthHandler:
             print(e, 888888888888888888)
             raise HTTPException(detail=f'where have you got this token, dude',
                                 status_code=status.HTTP_401_UNAUTHORIZED)
+
+    async def get_token_pairs_by_refresh_token(self, refresh_token: str, session: AsyncSession) -> dict:
+        payload = await self.decode_token(refresh_token)
+        user: User = await user_manager.get(session=session, model_field=User.email, value=payload['sub'])
+        if not user:
+            raise HTTPException(detail=f'User with email {payload["sub"]} not found',
+                                status_code=status.HTTP_404_NOT_FOUND)
+        token_pair = await self.get_token_pairs(user)
+        return token_pair
 
 
 auth_handler = AuthHandler()
