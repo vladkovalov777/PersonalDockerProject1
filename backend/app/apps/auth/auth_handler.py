@@ -1,4 +1,6 @@
 from datetime import timedelta, datetime
+from fastapi import HTTPException, status
+
 
 import jwt
 
@@ -13,10 +15,10 @@ class AuthHandler:
 
     async def get_token_pairs(self, user: User) -> dict:
         access_token_payload = {
-            'id': user.id
+            'sub': user.email
         }
         refresh_token_payload = {
-            'id': user.id,
+            'sub': user.email,
         }
         # todo process refresh token
 
@@ -33,13 +35,25 @@ class AuthHandler:
         }
         payload.update(time_payload)
         token = jwt.encode(
-            payload=payload,
-            key=self.secret,
+            payload,
+            self.secret,
             algorithm=self.algorithm
 
         )
 
         return token
+
+    async def decode_token(self, token: str) -> dict:
+        try:
+            payload = jwt.decode(token, self.secret, [self.algorithm])
+            return payload
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(detail=f'token expired',
+                                status_code=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError as e:
+            print(e, 888888888888888888)
+            raise HTTPException(detail=f'where have you got this token, dude',
+                                status_code=status.HTTP_401_UNAUTHORIZED)
 
 
 auth_handler = AuthHandler()

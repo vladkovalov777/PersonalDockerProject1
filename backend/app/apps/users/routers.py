@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, HTTPException
 
 from apps.auth.auth_handler import auth_handler
 from apps.auth.password_handler import PasswordHandler
-from apps.core.dependencies import get_async_session
+from apps.core.dependencies import get_async_session, get_current_user
 from apps.users.crud import user_manager
 from apps.users.models import User
 from apps.users.schemas import SavedUserSchema, RegisterUserSchema
@@ -51,3 +51,10 @@ async def user_login(
 
     tokens = await auth_handler.get_token_pairs(user)
     return tokens
+
+
+@users_router.get("/my-info")
+async def get_my_info(
+        user: User = Depends(get_current_user),
+):
+    return {'id': user.id, 'email': user.email}
