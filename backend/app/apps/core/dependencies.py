@@ -24,6 +24,10 @@ async def get_current_user(
 ) -> User:
     payload = await auth_handler.decode_token(token)
 
+    refresh_token_key = payload.get("key")
+    if refresh_token_key:
+        raise HTTPException(detail=f'We accept only access tokens, but refresh was provided', status_code=status.HTTP_401_UNAUTHORIZED)
+
     user: User = await user_manager.get(session=session, model_field=User.email, value=payload['sub'])
     if not user:
         raise HTTPException(detail=f'User with email {payload["sub"]} not found',
