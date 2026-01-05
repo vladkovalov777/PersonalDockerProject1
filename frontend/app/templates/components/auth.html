@@ -1,11 +1,11 @@
 
 {% if user %}
 
-<button type="button" class="btn btn-light">User: {{ user.name }}</button>
-<button type="button" class="btn btn-warning">Logout</button>
+<button type="button" class="btn btn-light">User: {{ user.email }}</button>
+<a class="btn btn-warning m-1" href="{{ url_for('logout') }}">Logout</a>
 {% else %}
 
-<a class="btn btn-success m-1" href="#">Login</a>
+<a class="btn btn-success m-1" href="{{ url_for('user_login') }}">Login</a>
 <a class="btn btn-success" href="{{ url_for('user_register') }}">Register</a>
 
 {% endif %}
