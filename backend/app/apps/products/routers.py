@@ -44,3 +44,35 @@ async def create_product(
     )
 
     return created_product
+
+
+@products_router.get('/{product_id}')
+async def get_product(
+        product_id: int,
+        session: AsyncSession = Depends(get_async_session)
+) -> SavedProductSchema:
+
+    product = await product_manager.get(
+        session=session,
+        model_field=Product.id,
+        value=product_id,
+    )
+    if not product:
+        raise HTTPException(detail=f'Product with id {product_id} not found',
+                            status_code=status.HTTP_404_NOT_FOUND)
+    return product
+
+
+@products_router.get('/')
+async def get_products(
+        q: str = '',
+        session: AsyncSession = Depends(get_async_session)
+) -> list[SavedProductSchema]:
+
+    products = await product_manager.get_items(
+        session=session,
+        q=q,
+        search_fields=[Product.title, Product.description]
+    )
+
+    return products
