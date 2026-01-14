@@ -28,11 +28,26 @@ async def get_user(request: Request) -> dict:
 
 
 @router_user.get("/")
-async def index(request: Request, user: dict = Depends(get_user)):
+async def index(request: Request, q: str = '', user: dict = Depends(get_user)):
+
+    async with httpx.AsyncClient() as client:
+        headers = {
+            "Content-Type": "application/json",
+        }
+        params = {
+            'q': q
+        }
+
+        response = await client.get("http://backend:20001/products/", headers=headers, params=params)
+        products = response.json()
+
+
+
     context = {
         "request": request,
         "title": "Головна сторінка сайту",
-        "user": user
+        "user": user,
+        "products": products
     }
 
     response = templates.TemplateResponse('pages/index.html', context=context)
@@ -105,8 +120,17 @@ async def user_login(request: Request, email: str = Form(''), password: str = Fo
             'password': password
         }
         response = await client.post("http://backend:20001/users/login", data=data, headers=headers)
+        if response.status_code == 500:
+            context['error'] = 'Сервіс авторизації тимчасово недоступний'
+            response = templates.TemplateResponse('pages/login.html', context=context)
+            return response
+        if response.status_code in (400, 404):
+            context['error'] = response.json()['detail']
+            response = templates.TemplateResponse('pages/login.html', context=context)
+            return response
+
         tokens = response.json()
-        print(tokens)
+
         access_token = tokens['access_token']
         user_info = await get_user_info(access_token)
 

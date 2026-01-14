@@ -1,7 +1,29 @@
 {% extends "base.html" %}
 
+
 {% block content %}
 
-Hello
+
+<div class="row row-cols-1 row-cols-md-4 g-4">
+
+  {% for product  in  products %}
+
+<div class="card" style="width: 18rem;">
+  <img src="{{ product.main_image }}" class="card-img-top" alt="...">
+  <div class="card-body">
+    <h5 class="card-title">{{ product.title }}</h5>
+    <p class="card-text">{{ product.description|truncate(30, true) }}</p>
+    <p class="card-text">{{ product.price}} грн</p>
+    <a href="#" class="btn btn-primary">Детальніше</a>
+  </div>
+</div>
+
+{% endfor %}
+
+</div>
+
+
+
+
 
 {% endblock %}
